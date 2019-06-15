@@ -1,0 +1,38 @@
+#!/usr/local/plan9/bin/rc
+
+
+# It has to be a mono wav file.
+# Like this: ffmpeg -i stereo.flac -ac 1 mono.flac
+# Does the curl work with mono? No, because it failed with the goog's example
+# So if I want to access the API surface, I need to write more Go code?
+# Because then I can control what gets executed. Right?
+
+# 
+
+curl --verbose \
+	-X POST \
+	-H 'Authorization: Bearer '^`{gcloud auth application-default print-access-token} \
+	-H 'Content-Type: application/json; charset=utf-8' \
+     --data '{
+  "config": {
+    "language_code": "en-US"
+  },
+  "audio":{
+    "uri":"gs://cloud-samples-tests/speech/brooklyn.flac"
+  }
+}' 'https://speech.googleapis.com/v1/speech:longrunningrecognize'
+
+exit
+
+# TODO(rjk): Make this a bit more rational.
+datafile = $1
+
+
+curl --trace sadness \
+	-X POST \
+	-H 'Content-Type: application/json' \
+	-H 'Authorization: Bearer '^`{gcloud auth application-default print-access-token} \
+	'https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize' \
+    -d @^$datafile^.json 
+
+#     -d @^$datafile^.json > $datafile^-response.json
