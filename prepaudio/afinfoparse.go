@@ -17,10 +17,10 @@ func findtime(cmdout []byte) (float64, error) {
 			thirdline = scanner.Text()
 			break
 		}
-		c++		
+		c++
 	}
 	if err := scanner.Err(); err != nil {
 		return 0.0, err
 	}
-	return  strconv.ParseFloat(strings.SplitN(thirdline, " ", 2)[0], 64)
+	return strconv.ParseFloat(strings.SplitN(thirdline, " ", 2)[0], 64)
 }
