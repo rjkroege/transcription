@@ -43,7 +43,7 @@ func main() {
 		usage(1)
 	}
 
-	// Enumerate files in indir. Some may not be coonvertible. Collect the
+	// Enumerate files in indir. Some may not be convertible. Collect the
 	// issues and dump that later.
 	infilenames, err := filepath.Glob( filepath.Join(indir, "*"))
 	if err != nil {
@@ -77,6 +77,13 @@ func main() {
 		bon := filepath.Base(fn)
 		bonexed := strings.TrimSuffix(bon, filepath.Ext(bon))
 		destname := filepath.Join(outdir, bonexed + ".wav")
+		slicedname := makeslicename(outdir, bonexed, 0)
+		
+		if _, ok := outfilemap[slicedname]; ok {
+			// We have a slice for this output. So skip. If you want to recreate
+			// slices, be sure to delete them all by hand before hand.
+			continue
+		}
 
 		if _, ok := outfilemap[destname]; !ok{
 			wp.Submit(func() {
@@ -142,10 +149,15 @@ func convertandsplit(fn, outdir, bonexed, destname string, wp *workerpool.Worker
 	donez <- destname
 }
 
+// makeslicename creates the special filenames for slices of a larger wav.
+func makeslicename(outdir, bonexed string, i int) string {
+	return filepath.Join(outdir, fmt.Sprintf("%s-〖%d〗.wav", bonexed, i))
+}
+
 // runsplit divides wav file destname into chunks small enough to work
 // with the Google transcription service.
 func runsplit(destname, outdir, bonexed string,  i int) {
-	slicename := filepath.Join(outdir, fmt.Sprintf("%s-〖%d〗.wav", bonexed, i))
+	slicename := makeslicename(outdir, bonexed, i)
 	// log.Println("slicing", destname, "to",  slicename)
 
 	// Runs ffmpeg -ss <start> -t <length> -i <infile>  <outfile>
@@ -153,7 +165,7 @@ func runsplit(destname, outdir, bonexed string,  i int) {
 		log.Printf("command failed %v\nLog for slicing of %s -> %s\n%s", err, destname, slicename, string(out))
 		return
 	}
-	log.Println("finished slice", slicename)
+	// log.Println("finished slice", slicename)
 }
 
 // runavinfo gets the duration of destname in seconds.
