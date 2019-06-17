@@ -66,7 +66,7 @@ func main() {
 	// between runs. Or just not care.
 
 	// Setup the worker pool.
-	wp := workerpool.New(4)
+	wp := workerpool.New(8)
 	donez := make(chan string)
 	filezcount := 0
 
@@ -147,9 +147,11 @@ func convertandsplit(fn, outdir, bonexed, destname string, wp *workerpool.Worker
 	donez <- destname
 }
 
-// makeslicename creates the special filenames for slices of a larger wav.
+// makeslicename creates the special filenames for slices of a larger
+// wav. I had used 〖 and 〗for bracketing the slice index. But it doesn't
+// work with GCP.
 func makeslicename(outdir, bonexed string, i int) string {
-	return filepath.Join(outdir, fmt.Sprintf("%s-〖%d〗.wav", bonexed, i))
+	return filepath.Join(outdir, fmt.Sprintf("%s-<%d>.wav", bonexed, i))
 }
 
 // runsplit divides wav file destname into chunks small enough to work
