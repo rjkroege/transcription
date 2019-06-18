@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# Recognition without enabling the multiple stuff needed for speaker separation.
+
+# Can't be transcribed with speaker recognition.
+# What do I want to do about it? Chance it? Google could get prosecuted for it.
+# That would be a career ending experience.
+# ## 04-23 Jenn's kids - two speakers at a time (ie. each clip has two different kids in it)
+transcribe   -t _April-23,-kids_Original-Media_Clip-,6.wav 
+transcribe   -t _April-23,-kids_Original-Media_Clip-,7.wav 
+transcribe   -t _April-23,-kids_Original-Media_Clip-,8.wav 
+transcribe   -t _April-23,-kids_Original-Media_Clip-,9.wav 
+
+# Children, can't be speaker-divided
+# ## 05-27 Relief Sale - many different speakers over different clips
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,152.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,153.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,154.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,155.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,156.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,157.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,158.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,159.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,160.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,161.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,162.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,163.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,164.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,165.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,166.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,167.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,168.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,169.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,170.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,171.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,172.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,173.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,174.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,175.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,176.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,177.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,178.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,179.wav 
+transcribe   -t _05-27-Relief-Sale_Original-Media_Clip-,180.wav 
+
+# children not permitted
+# ## 06-04 Jenn's kids at my house - one speaker per clip
+transcribe   -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,3.wav 
+transcribe   -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,4.wav 
+transcribe   -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,5.wav 
+transcribe   -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,6.wav 
+
+# children
+# ## 06-11 group interview at my house - six speakers
+transcribe   -t _06-11-group-interview-at-my-house_Original-Media_Clip-,6.wav 
+transcribe   -t _06-11-group-interview-at-my-house_Original-Media_Clip-,7.wav 
+
+## 06-11 Laurel Creek - seven speakers in some clips
+# child
+transcribe   -t _06-11-Laurel-Creek_Original-Media_Clip-,10.wav 
+# child
+transcribe   -t _06-11-Laurel-Creek_Original-Media_Clip-,15.wav 
+# no discernible content
+
+
+## 06-11 Laurel Creek - part 2 - seven speakers in some clips
+# child
+transcribe   -t _06-11-Laurel-Creek-part-2_Original-Media_Clip-,2.wav 
+
+## 06-12 airport before Hello-Goodbye - lots of speakers over different clips
+
+## 06-12 Hello Goodbye - many speakers
+# children
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,10.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,11.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,12.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,13.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,14.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,15.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,16.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,6.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,7.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,8.wav 
+transcribe   -t _06-12-Hello-Goodbye_Original-Media_Clip-,9.wav 
+
+## 06-12 home from airport - six speakers
+# child
+transcribe   -t _06-12-home-from-airport_Original-Media_Clip-,181.wav 
+
+## 06-12 ride to the airport - six speakers
+# child
+transcribe   -t _06-12-ride-to-the-airport_Original-Media_Clip-,2.wav 

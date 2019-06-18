@@ -1,0 +1,111 @@
+#!/bin/sh
+
+# Recognition with multiple speaker enabling.
+
+## 04-22 Jenn pregnant - one speaker (2)
+transcribe -sp 2  -t _04-22-Jenn-pregnant_Original-Media_Clip-,3.wav 
+transcribe -sp 2  -t _04-22-Jenn-pregnant_Original-Media_Clip-,4.wav 
+
+transcribe -sp 2  -t _04-22-Jenn-pregnant_Original-Media_Clip-,5-"<0>".wav 
+transcribe -sp 2  -t _04-22-Jenn-pregnant_Original-Media_Clip-,5-"<1>".wav 
+transcribe -sp 2  -t _04-22-Jenn-pregnant_Original-Media_Clip-,5-"<2>".wav 
+
+# Can't be transcribed with speaker recognition.
+# What do I want to do about it? Chance it? Google could get prosecuted for it.
+# That would be a career ending experience.
+# ## 04-23 Jenn's kids - two speakers at a time (ie. each clip has two different kids in it)
+
+## 04-25 airport arrival - three speakers
+# transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,135.wav 
+transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,136.wav 
+# transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,137.wav 
+transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,138.wav 
+transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,139.wav 
+# transcribe -sp 2  -t _04-25-airport-arrival_Original-Media_Clip-,140.wav 
+transcribe -sp 4  -t _04-25-airport-arrival_Original-Media_Clip-,141.wav 
+transcribe -sp 4  -t _04-25-airport-arrival_Original-Media_Clip-,142.wav 
+transcribe -sp 4  -t _04-25-airport-arrival_Original-Media_Clip-,143.wav 
+transcribe -sp 4  -t _04-25-airport-arrival_Original-Media_Clip-,144.wav 
+transcribe -sp 4  -t _04-25-airport-arrival_Original-Media_Clip-,145.wav 
+
+## 04-27 Sam and Andy in Stratford - two speakers
+transcribe -sp 3  -t _2017-05-15_Original-Media_Clip-,1.wav 
+transcribe -sp 3  -t _2017-05-15_Original-Media_Clip-,2-"<0>".wav 
+transcribe -sp 3  -t _2017-05-15_Original-Media_Clip-,2-"<1>".wav 
+
+transcribe -sp 3  -t _2017-05-15_Original-Media_Clip-,3-"<0>".wav 
+transcribe -sp 3  -t _2017-05-15_Original-Media_Clip-,3-"<1>".wav 
+
+## 05-05 Orlando home from hospital - six speakers
+# Dates are wrong?
+# transcribe -sp 2  -t _05-03-hospital_Original-Media_Clip-,149.wav 
+# transcribe -sp 2  -t _05-03-hospital_Original-Media_Clip-,150.wav 
+# transcribe -sp 2  -t _05-03-hospital_Original-Media_Clip-,151.wav 
+
+## 05-17 Andy and Sam in Stratford - two speakers
+transcribe -sp 2  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,1.wav 
+transcribe -sp 2  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,2.wav
+transcribe -sp 3  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,3.wav 
+
+transcribe -sp 3  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,4-"<0>".wav 
+transcribe -sp 3  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,4-"<1>".wav 
+transcribe -sp 3  -t _05-17-Andy-and-Sam-in-Stratford_Original-Media_Clip-,4-"<2>".wav 
+
+## 06-02 Waterloo Park - three speakers
+transcribe -sp 4  -t _06-02-Waterloo-Park_Original-Media_Clip-,5.wav 
+
+## 06-03 Jenn at my house - one speaker
+transcribe -sp 2  -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,1-"<0>".wav 
+transcribe -sp 2  -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,1-"<1>".wav 
+transcribe -sp 2  -t _June-3,-Jenn-and-June-4,-kids_Original-Media_Clip-,2.wav 
+
+## 06-10 Sam and Andy and Ivana - three speakers
+# note that this track has a replication error
+transcribe -sp 3  -t _06-10-Sam-and-Andy-and-Ivana_Original-Media_Clip-,1.wav 
+transcribe -sp 3  -t _06-10-Sam-and-Andy-and-Ivana_Original-Media_Clip-,2.wav 
+transcribe -sp 3  -t _06-10-Sam-and-Andy-and-Ivana_Original-Media_Clip-,3.wav 
+transcribe -sp 4  -t _06-10-Sam-and-Andy-and-Ivana_Original-Media_Clip-,4.wav 
+transcribe -sp 4  -t _06-10-Sam-and-Andy-and-Ivana_Original-Media_Clip-,5.wav 
+
+## 06-11 Laurel Creek - seven speakers in some clips
+transcribe -sp 5  -t _06-11-Laurel-Creek_Original-Media_Clip-,8.wav 
+transcribe -sp 5  -t _06-11-Laurel-Creek_Original-Media_Clip-,9.wav 
+# child
+transcribe -sp 5  -t _06-11-Laurel-Creek_Original-Media_Clip-,11.wav 
+transcribe -sp 5  -t _06-11-Laurel-Creek_Original-Media_Clip-,12.wav 
+transcribe -sp 2  -t _06-11-Laurel-Creek_Original-Media_Clip-,13.wav 
+transcribe -sp 2  -t _06-11-Laurel-Creek_Original-Media_Clip-,14.wav 
+# child
+# no discernible content
+# transcribe -sp 2  -t _06-11-Laurel-Creek_Original-Media_Clip-,16.wav 
+# transcribe -sp 2  -t _06-11-Laurel-Creek_Original-Media_Clip-,17.wav 
+transcribe -sp 4  -t _06-11-Laurel-Creek_Original-Media_Clip-,18.wav 
+transcribe -sp 3  -t _06-11-Laurel-Creek_Original-Media_Clip-,19.wav 
+
+
+## 06-11 Laurel Creek - part 2 - seven speakers in some clips
+# transcribe -sp 2  -t _06-11-Laurel-Creek-part-2_Original-Media_Clip-,1.wav 
+# child
+transcribe -sp 4  -t _06-11-Laurel-Creek-part-2_Original-Media_Clip-,3.wav 
+
+## 06-12 airport before Hello-Goodbye - lots of speakers over different clips
+transcribe -sp 2  -t _06-12-airport-before-Hello-Goodby_Original-Media_Clip-,3.wav 
+transcribe -sp 2  -t _06-12-airport-before-Hello-Goodby_Original-Media_Clip-,4.wav 
+transcribe -sp 2  -t _06-12-airport-before-Hello-Goodby_Original-Media_Clip-,5.wav 
+
+
+## 06-12 home from airport - six speakers
+# child
+transcribe -sp 3  -t _06-12-home-from-airport_Original-Media_Clip-,182.wav 
+
+## 12-18 Jenn at my house - one speaker
+transcribe -sp 2  -t _12-18-Jenn-at-my-house_Original-Media_Clip-,1.wav 
+
+transcribe -sp 2  -t _12-18-Jenn-at-my-house_Original-Media_Clip-,2-"<0>".wav 
+transcribe -sp 2  -t _12-18-Jenn-at-my-house_Original-Media_Clip-,2-"<1>".wav 
+transcribe -sp 2  -t _12-18-Jenn-at-my-house_Original-Media_Clip-,2-"<2>".wav 
+
+
+## unknown date Australia - two speakers and a babbling baby
+transcribe -sp 3  -t _unknown-date-Australia_Original-Media_Clip-,1.wav 
+
