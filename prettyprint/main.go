@@ -8,6 +8,8 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
@@ -54,9 +56,17 @@ func doprettyprint(filename string) error {
 		log.Println("can't re-read the transcription file because", err)
 		return err
 	}
-
 	speakers := aggregateWords(&resp)
-	printWords(speakers, os.Stdout)
+
+	bp := filepath.Base(filename)
+	ofn := strings.TrimSuffix(bp, filepath.Ext(bp)) + ".txt"
+	ofd, err := os.Create(ofn)
+	if err != nil {
+		log.Fatalln("can't open ouput filename", ofn, "because", err)
+	}
+	defer ofd.Close()
+
+	printWords(speakers, ofd)
 
 	return nil
 }
@@ -168,7 +178,7 @@ func printWords(speakers SpeakersType, fd io.Writer) error {
 		if _, err := io.WriteString(fd, speakers[speaker][0].utterance); err != nil {
 			return err
 		}
-		if  _, err := io.WriteString(fd, "\n"); err != nil {
+		if _, err := io.WriteString(fd, "\n"); err != nil {
 			return err
 		}
 
@@ -180,7 +190,7 @@ func printWords(speakers SpeakersType, fd io.Writer) error {
 		}
 
 		if nextspeaker != speaker {
-			if  _, err := io.WriteString(fd, "\n"); err != nil {
+			if _, err := io.WriteString(fd, "\n"); err != nil {
 				return err
 			}
 			speaker = nextspeaker
