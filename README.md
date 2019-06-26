@@ -17,3 +17,9 @@ API surface has (perhaps had?) an upper bound on the size of a transcribed outpu
 
 With the audio files prepped, transfer them into GCS with something like `gsutil`.
 
+# `transcribe`
+
+# `prettyprint`
+
+The transcription API returns a large JSON (well, probably a proto) containing the transcription results. It is not particularly readable for humans. The `prettyprint` generates a more human-formated output from the JSON data.
+

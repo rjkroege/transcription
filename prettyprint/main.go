@@ -66,7 +66,8 @@ func doprettyprint(filename string) error {
 	}
 	defer ofd.Close()
 
-	printWords(speakers, ofd)
+	offset := gettimeoffset(filename)
+	printWords(speakers, ofd, offset)
 
 	return nil
 }
@@ -104,8 +105,8 @@ func (wb *wordBundle) shouldMerge(nwb *wordBundle) bool {
 }
 
 // printSpeakerTime prints the speaker with timestamp to o.
-func (wb *wordBundle) printSpeakerTime(o io.Writer) error {
-	_, err := fmt.Fprintf(o, "%s: %s\n", wb.start, wb.speaker)
+func (wb *wordBundle) printSpeakerTime(o io.Writer, offset time.Duration) error {
+	_, err := fmt.Fprintf(o, "%s: %s\n", offset + wb.start, wb.speaker)
 	return err
 }
 
@@ -163,14 +164,14 @@ func advanceSpeaker(speakers SpeakersType, speaker int) {
 	}
 }
 
-func printWords(speakers SpeakersType, fd io.Writer) error {
+func printWords(speakers SpeakersType, fd io.Writer, offset time.Duration) error {
 	speaker := findEarliestSpeaker(speakers)
 	if speaker == 0 {
 		// TODO(rjk): Return error.
 		log.Fatalln("this shouldn't happens...")
 	}
 
-	if err := speakers[speaker][0].printSpeakerTime(fd); err != nil {
+	if err := speakers[speaker][0].printSpeakerTime(fd, offset); err != nil {
 		return err
 	}
 	for {
@@ -194,7 +195,7 @@ func printWords(speakers SpeakersType, fd io.Writer) error {
 				return err
 			}
 			speaker = nextspeaker
-			if err := speakers[speaker][0].printSpeakerTime(fd); err != nil {
+			if err := speakers[speaker][0].printSpeakerTime(fd, offset); err != nil {
 				return err
 			}
 		}
