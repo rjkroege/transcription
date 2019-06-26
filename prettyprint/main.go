@@ -56,7 +56,7 @@ func doprettyprint(filename string) error {
 	}
 
 	speakers := aggregateWords(&resp)
-	printWords(speakers)
+	printWords(speakers, os.Stdout)
 
 	return nil
 }
@@ -153,18 +153,24 @@ func advanceSpeaker(speakers SpeakersType, speaker int) {
 	}
 }
 
-func printWords(speakers SpeakersType) {
+func printWords(speakers SpeakersType, fd io.Writer) error {
 	speaker := findEarliestSpeaker(speakers)
 	if speaker == 0 {
+		// TODO(rjk): Return error.
 		log.Fatalln("this shouldn't happens...")
 	}
 
-	//	io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-	//	io.WriteString(os.Stdout, "\n")
-	speakers[speaker][0].printSpeakerTime(os.Stdout)
+	if err := speakers[speaker][0].printSpeakerTime(fd); err != nil {
+		return err
+	}
 	for {
-		io.WriteString(os.Stdout, speakers[speaker][0].utterance)
-		io.WriteString(os.Stdout, "\n")
+
+		if _, err := io.WriteString(fd, speakers[speaker][0].utterance); err != nil {
+			return err
+		}
+		if  _, err := io.WriteString(fd, "\n"); err != nil {
+			return err
+		}
 
 		advanceSpeaker(speakers, speaker)
 
@@ -174,13 +180,14 @@ func printWords(speakers SpeakersType) {
 		}
 
 		if nextspeaker != speaker {
-			io.WriteString(os.Stdout, "\n")
+			if  _, err := io.WriteString(fd, "\n"); err != nil {
+				return err
+			}
 			speaker = nextspeaker
-			//			io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-			//			io.WriteString(os.Stdout, "\n")
-			speakers[speaker][0].printSpeakerTime(os.Stdout)
+			if err := speakers[speaker][0].printSpeakerTime(fd); err != nil {
+				return err
+			}
 		}
-
 	}
-
+	return nil
 }
