@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -96,12 +95,11 @@ func (wb *wordBundle) shouldMerge(nwb *wordBundle) bool {
 
 // printSpeakerTime prints the speaker with timestamp to o.
 func (wb *wordBundle) printSpeakerTime(o io.Writer) error {
-	_, err :=	fmt.Fprintf(o, "%s: %s\n", wb.start , wb.speaker)
+	_, err := fmt.Fprintf(o, "%s: %s\n", wb.start, wb.speaker)
 	return err
 }
 
 type SpeakersType map[int][]*wordBundle
-
 
 func aggregateWords(resp *speechpb.LongRunningRecognizeResponse) SpeakersType {
 	speakers := make(SpeakersType)
@@ -161,8 +159,8 @@ func printWords(speakers SpeakersType) {
 		log.Fatalln("this shouldn't happens...")
 	}
 
-//	io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-//	io.WriteString(os.Stdout, "\n")
+	//	io.WriteString(os.Stdout, speakers[speaker][0].speaker)
+	//	io.WriteString(os.Stdout, "\n")
 	speakers[speaker][0].printSpeakerTime(os.Stdout)
 	for {
 		io.WriteString(os.Stdout, speakers[speaker][0].utterance)
@@ -178,8 +176,8 @@ func printWords(speakers SpeakersType) {
 		if nextspeaker != speaker {
 			io.WriteString(os.Stdout, "\n")
 			speaker = nextspeaker
-//			io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-//			io.WriteString(os.Stdout, "\n")
+			//			io.WriteString(os.Stdout, speakers[speaker][0].speaker)
+			//			io.WriteString(os.Stdout, "\n")
 			speakers[speaker][0].printSpeakerTime(os.Stdout)
 		}
 
