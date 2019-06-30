@@ -12,10 +12,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
-	"io"
 	"log"
-	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,10 +32,6 @@ const usage = `Usage: transcribe <gcs uri>
 
 var speakercount = flag.Int("sp", 1, "Set the number of speakers in this audio file")
 var transcribe = flag.String("t", "", "transcribe the argument")
-
-// TODO(rjk): when I have better naming, might want to conver this in some way...
-var prettyprint = flag.String("pp", "transcript.json", "format and output the specified pre-existing transcription")
-
 var uribase = flag.String("ub", "gs://audioscratch", "find the audio files in this bucket path")
 
 var testlog = flag.Bool("testlog", false,
@@ -113,155 +106,6 @@ func main() {
 		dotranscribe(*transcribe)
 		return
 	}
-
-	if *prettyprint != "" {
-		doprettyprint(*prettyprint)
-	}
-}
-
-func dumpwordbundles(speakers [][]*wordBundle) {
-	for i, speaker := range speakers {
-		log.Println("speaker", i)
-		if speaker != nil {
-			for i, wb := range speaker {
-				log.Printf("[%d]: %v\n", i, wb)
-			}
-		}
-	}
-}
-
-func doprettyprint(filename string) error {
-	fd, err := os.Open(filename)
-	if err != nil {
-		log.Fatalln("can't open the file", filename, "because", err)
-	}
-	defer fd.Close()
-	slurper := json.NewDecoder(fd)
-
-	var resp speechpb.LongRunningRecognizeResponse
-	if err := slurper.Decode(&resp); err != nil {
-		log.Println("can't re-read the transcription file because", err)
-		return err
-	}
-
-	speakers := aggregateWords(&resp)
-	printWords(speakers)
-
-	return nil
-}
-
-type wordBundle struct {
-	utterance string
-	speaker   string // So that I can emit nice names.
-	start     time.Duration
-	end       time.Duration
-}
-
-func makeWordBundle(wi *speechpb.WordInfo) *wordBundle {
-	return &wordBundle{
-		utterance: wi.Word,
-		speaker:   fmt.Sprintf("SPEAKER_%d", wi.SpeakerTag),
-		start:     time.Duration(int64(wi.StartTime.Nanos) + int64(time.Second)*int64(wi.StartTime.Seconds)),
-		end:       time.Duration(int64(wi.EndTime.Nanos) + int64(time.Second)*int64(wi.EndTime.Seconds)),
-	}
-}
-
-func (wb *wordBundle) mergeUtterance(nwb *wordBundle) {
-	wb.utterance = wb.utterance + " " + nwb.utterance
-	wb.end = nwb.end
-}
-
-func (wb *wordBundle) shouldMerge(nwb *wordBundle) bool {
-	// Based on heuristic: Mean from http://www.speech.kth.se/prod/publications/files/3418.pdf
-	if nwb.start-wb.end < time.Millisecond*750 {
-		return true
-	}
-	return false
-}
-
-type SpeakersType map[int][]*wordBundle
-
-func aggregateWords(resp *speechpb.LongRunningRecognizeResponse) SpeakersType {
-	speakers := make(SpeakersType)
-	// by observation, the words are replicated each time.
-	for _, wi := range resp.Results[len(resp.Results)-1].Alternatives[0].Words {
-		speaker, ok := speakers[int(wi.SpeakerTag)]
-		if !ok {
-			speaker = make([]*wordBundle, 0, 10)
-			speakers[int(wi.SpeakerTag)] = speaker
-		}
-		wb := makeWordBundle(wi)
-
-		if len(speaker) == 0 {
-			speaker = append(speaker, wb)
-			speakers[int(wi.SpeakerTag)] = speaker
-			continue
-		}
-
-		lastwb := speaker[len(speaker)-1]
-		if lastwb.shouldMerge(wb) {
-			lastwb.mergeUtterance(wb)
-		} else {
-			speaker = append(speaker, wb)
-			speakers[int(wi.SpeakerTag)] = speaker
-		}
-	}
-
-	return speakers
-}
-
-func findEarliestSpeaker(speakers SpeakersType) int {
-	t := int64(math.MaxInt64)
-	sp := 0
-
-	for i, s := range speakers {
-		if len(s) > 0 {
-			if int64(s[0].start) < t {
-				t = int64(s[0].start)
-				sp = i
-			}
-		}
-
-	}
-
-	return sp
-}
-
-func advanceSpeaker(speakers SpeakersType, speaker int) {
-	if speakers[speaker] != nil && len(speakers[speaker]) > 0 {
-		speakers[speaker] = speakers[speaker][1:]
-	}
-}
-
-func printWords(speakers SpeakersType) {
-	speaker := findEarliestSpeaker(speakers)
-	if speaker == 0 {
-		log.Fatalln("this shouldn't happens...")
-	}
-
-	io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-	io.WriteString(os.Stdout, "\n")
-	for {
-		io.WriteString(os.Stdout, speakers[speaker][0].utterance)
-		io.WriteString(os.Stdout, "\n")
-
-		advanceSpeaker(speakers, speaker)
-
-		nextspeaker := findEarliestSpeaker(speakers)
-		if nextspeaker == 0 {
-			break
-		}
-
-		if nextspeaker != speaker {
-			io.WriteString(os.Stdout, "\n")
-			speaker = nextspeaker
-			io.WriteString(os.Stdout, speakers[speaker][0].speaker)
-			io.WriteString(os.Stdout, "\n")
-
-		}
-
-	}
-
 }
 
 func sendGCS(client *speech.Client, gcsURI string) (*speechpb.LongRunningRecognizeResponse, error) {
@@ -276,7 +120,7 @@ func sendGCS(client *speech.Client, gcsURI string) (*speechpb.LongRunningRecogni
 				// These are optional yes?
 				//Encoding:        speechpb.RecognitionConfig_LINEAR16,
 				//SampleRateHertz: 16000,
-				LanguageCode:               "en-US",
+				LanguageCode: "en-US",
 			},
 			Audio: &speechpb.RecognitionAudio{
 				AudioSource: &speechpb.RecognitionAudio_Uri{Uri: gcsURI},
