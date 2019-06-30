@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"bufio"
 
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 )
@@ -21,13 +22,10 @@ const usage = `Usage: transcribe <gcs uri>`
 func main() {
 	flag.Parse()
 
-	// TODO(rjk): Better usage.
-	if len(flag.Args()) != 1 {
-		log.Println("prettyprint: needs a single input file to process")
-	}
-
 	// TODO(rjk): Be able to process multiple files at once.
-	doprettyprint(flag.Args()[0])
+	for _, fn := range flag.Args() {
+		doprettyprint(fn)
+	}
 }
 
 func dumpwordbundles(speakers [][]*wordBundle) {
@@ -46,17 +44,24 @@ func dumpwordbundles(speakers [][]*wordBundle) {
 func doprettyprint(filename string) error {
 	fd, err := os.Open(filename)
 	if err != nil {
-		log.Fatalln("can't open the file", filename, "because", err)
+		log.Println("can't open input file", filename, "because", err)
+		return err
 	}
 	defer fd.Close()
 	slurper := json.NewDecoder(fd)
 
 	var resp speechpb.LongRunningRecognizeResponse
 	if err := slurper.Decode(&resp); err != nil {
-		log.Println("can't re-read the transcription file because", err)
+		log.Printf("%s: can't decode transcription JSON file because %v\n", filename, err)
 		return err
 	}
-	speakers := aggregateWords(&resp)
+
+	var speakers SpeakersType
+	if len(resp.Results) < 1 || resp.Results[len(resp.Results)-1].Alternatives == nil {
+		log.Printf("last Result in input JSON %s is empty assuming no speaker separation", filename)
+	} else {
+		speakers = aggregateWords(&resp)
+	}
 
 	bp := filepath.Base(filename)
 	ofn := strings.TrimSuffix(bp, filepath.Ext(bp)) + ".txt"
@@ -65,10 +70,42 @@ func doprettyprint(filename string) error {
 		log.Fatalln("can't open ouput filename", ofn, "because", err)
 	}
 	defer ofd.Close()
+	bofd := bufio.NewWriter(ofd)
 
 	offset := gettimeoffset(filename)
-	printWords(speakers, ofd, offset)
 
+	if speakers == nil {
+		if err := printTranscript(&resp, bofd); err != nil {
+			log.Printf("File %s failed in printTranscript: %v\n", filename, err)
+		}
+	} else {
+		if err := printWords(speakers, bofd, offset); err != nil {
+			log.Printf("File %s failed in printWords: %v\n", filename, err)
+		}
+	}
+	if err := bofd.Flush(); err != nil {
+			log.Printf("File %s failed to flush: %v\n", filename, err)
+	}
+	return nil
+}
+
+// printTranscript prints the transcription contents if no per-speaker
+// content was available.
+func printTranscript(resp *speechpb.LongRunningRecognizeResponse, ofd io.Writer) error {
+	log.Println("running printTranscript")
+	for _, r := range resp.Results {
+		// Maybe the Result is empty? Skip it.
+		if len( r.Alternatives) == 0 {
+			continue
+		}
+		// We just print the first alternative.
+		if _, err := io.WriteString(ofd, r.Alternatives[0].Transcript); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(ofd, "\n\n"); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -112,10 +149,20 @@ func (wb *wordBundle) printSpeakerTime(o io.Writer, offset time.Duration) error 
 
 type SpeakersType map[int][]*wordBundle
 
+// aggregateWords builds a per-speaker word bundle if the resp contains
+// per-speaker information (in the form of a non-nil Word key.) Returns
+// nil if the resp is not multi-speaker.
 func aggregateWords(resp *speechpb.LongRunningRecognizeResponse) SpeakersType {
+
+	// by observation, the words are replicated each time. (i.e. if there are
+	// multiple Results objects in resp, all words are in the last one.
+	lastWords := resp.Results[len(resp.Results)-1].Alternatives[0].Words
+	if lastWords == nil {
+		return nil
+	}
+
 	speakers := make(SpeakersType)
-	// by observation, the words are replicated each time.
-	for _, wi := range resp.Results[len(resp.Results)-1].Alternatives[0].Words {
+	for _, wi := range lastWords {
 		speaker, ok := speakers[int(wi.SpeakerTag)]
 		if !ok {
 			speaker = make([]*wordBundle, 0, 10)
@@ -167,15 +214,13 @@ func advanceSpeaker(speakers SpeakersType, speaker int) {
 func printWords(speakers SpeakersType, fd io.Writer, offset time.Duration) error {
 	speaker := findEarliestSpeaker(speakers)
 	if speaker == 0 {
-		// TODO(rjk): Return error.
-		log.Fatalln("this shouldn't happens...")
+		return fmt.Errorf("printWords: speaker is wrongly 0")
 	}
 
 	if err := speakers[speaker][0].printSpeakerTime(fd, offset); err != nil {
 		return err
 	}
 	for {
-
 		if _, err := io.WriteString(fd, speakers[speaker][0].utterance); err != nil {
 			return err
 		}
