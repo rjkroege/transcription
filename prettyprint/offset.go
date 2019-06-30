@@ -24,7 +24,7 @@ func gettimeoffset(fn string) time.Duration {
 	}
 
 	if s, err := strconv.ParseInt(matches[0][1], 10, 64); err == nil {
-		return time.Duration(s * 2700) * time.Second
+		return time.Duration(s*2700) * time.Second
 	}
 
 	return time.Duration(0)

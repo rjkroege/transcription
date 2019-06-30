@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"bufio"
 
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 )
@@ -84,7 +84,7 @@ func doprettyprint(filename string) error {
 		}
 	}
 	if err := bofd.Flush(); err != nil {
-			log.Printf("File %s failed to flush: %v\n", filename, err)
+		log.Printf("File %s failed to flush: %v\n", filename, err)
 	}
 	return nil
 }
@@ -95,7 +95,7 @@ func printTranscript(resp *speechpb.LongRunningRecognizeResponse, ofd io.Writer)
 	log.Println("running printTranscript")
 	for _, r := range resp.Results {
 		// Maybe the Result is empty? Skip it.
-		if len( r.Alternatives) == 0 {
+		if len(r.Alternatives) == 0 {
 			continue
 		}
 		// We just print the first alternative.
@@ -143,7 +143,7 @@ func (wb *wordBundle) shouldMerge(nwb *wordBundle) bool {
 
 // printSpeakerTime prints the speaker with timestamp to o.
 func (wb *wordBundle) printSpeakerTime(o io.Writer, offset time.Duration) error {
-	_, err := fmt.Fprintf(o, "%s: %s\n", offset + wb.start, wb.speaker)
+	_, err := fmt.Fprintf(o, "%s: %s\n", offset+wb.start, wb.speaker)
 	return err
 }
 
