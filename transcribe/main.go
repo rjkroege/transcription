@@ -33,6 +33,7 @@ const usage = `Usage: transcribe <gcs uri>
 var speakercount = flag.Int("sp", 1, "Set the number of speakers in this audio file")
 var transcribe = flag.String("t", "", "transcribe the argument")
 var uribase = flag.String("ub", "gs://audioscratch", "find the audio files in this bucket path")
+var language = flag.String("lang", "en-US", "language code for transcription, defaults to en-US")
 
 var testlog = flag.Bool("testlog", false,
 	"Log in the conventional way for running in a terminal.")
@@ -120,7 +121,7 @@ func sendGCS(client *speech.Client, gcsURI string) (*speechpb.LongRunningRecogni
 				// These are optional yes?
 				//Encoding:        speechpb.RecognitionConfig_LINEAR16,
 				//SampleRateHertz: 16000,
-				LanguageCode: "en-US",
+				LanguageCode: *language,
 			},
 			Audio: &speechpb.RecognitionAudio{
 				AudioSource: &speechpb.RecognitionAudio_Uri{Uri: gcsURI},
@@ -134,7 +135,7 @@ func sendGCS(client *speech.Client, gcsURI string) (*speechpb.LongRunningRecogni
 				// These are optional yes?
 				//Encoding:        speechpb.RecognitionConfig_LINEAR16,
 				//SampleRateHertz: 16000,
-				LanguageCode:               "en-US",
+				LanguageCode:               *language,
 				EnableAutomaticPunctuation: true,
 				EnableSpeakerDiarization:   true,
 				DiarizationSpeakerCount:    int32(*speakercount),
