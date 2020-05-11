@@ -17,7 +17,7 @@ import (
 )
 
 // TODO(rjk): Update
-const usage = `Usage: transcribe <gcs uri>`
+const usage = `prettyprint`
 
 func main() {
 	flag.Parse()
@@ -89,20 +89,52 @@ func doprettyprint(filename string) error {
 	return nil
 }
 
+func printLinebrokenString(ofd *bufio.Writer, s string) error {
+	for _, r := range s {
+		switch r {
+		case '?', '.', '!':
+			if _, err := ofd.WriteRune(r); err != nil {
+				return err
+			}
+			if _, err := ofd.WriteRune('\n'); err != nil {
+				return err
+			}
+		case '\n':
+			if _, err := ofd.WriteRune(' '); err != nil {
+				return err
+			}
+		default:
+			if _, err := ofd.WriteRune(r); err != nil {
+				return err
+			}
+		}
+	}
+	if _, err := ofd.WriteRune(' '); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // printTranscript prints the transcription contents if no per-speaker
 // content was available.
-func printTranscript(resp *speechpb.LongRunningRecognizeResponse, ofd io.Writer) error {
+func printTranscript(resp *speechpb.LongRunningRecognizeResponse, ofd *bufio.Writer) error {
 	log.Println("running printTranscript")
 	for _, r := range resp.Results {
 		// Maybe the Result is empty? Skip it.
 		if len(r.Alternatives) == 0 {
 			continue
 		}
-		// We just print the first alternative.
-		if _, err := io.WriteString(ofd, r.Alternatives[0].Transcript); err != nil {
+
+		if err := printLinebrokenString(ofd, r.Alternatives[0].Transcript); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(ofd, "\n\n"); err != nil {
+
+		// Insert two blank lines after the end of a particular block.
+		if _, err := ofd.WriteRune('\n'); err != nil {
+			return err
+		}
+		if _, err := ofd.WriteRune('\n'); err != nil {
 			return err
 		}
 	}
@@ -201,7 +233,6 @@ func findEarliestSpeaker(speakers SpeakersType) int {
 		}
 
 	}
-
 	return sp
 }
 
@@ -211,7 +242,9 @@ func advanceSpeaker(speakers SpeakersType, speaker int) {
 	}
 }
 
-func printWords(speakers SpeakersType, fd io.Writer, offset time.Duration) error {
+// print here...
+
+func printWords(speakers SpeakersType, fd *bufio.Writer, offset time.Duration) error {
 	speaker := findEarliestSpeaker(speakers)
 	if speaker == 0 {
 		return fmt.Errorf("printWords: speaker is wrongly 0")
@@ -221,10 +254,7 @@ func printWords(speakers SpeakersType, fd io.Writer, offset time.Duration) error
 		return err
 	}
 	for {
-		if _, err := io.WriteString(fd, speakers[speaker][0].utterance); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(fd, "\n"); err != nil {
+		if err := printLinebrokenString(fd, speakers[speaker][0].utterance); err != nil {
 			return err
 		}
 
@@ -236,7 +266,10 @@ func printWords(speakers SpeakersType, fd io.Writer, offset time.Duration) error
 		}
 
 		if nextspeaker != speaker {
-			if _, err := io.WriteString(fd, "\n"); err != nil {
+			if _, err := fd.WriteRune('\n'); err != nil {
+				return err
+			}
+			if _, err := fd.WriteRune('\n'); err != nil {
 				return err
 			}
 			speaker = nextspeaker

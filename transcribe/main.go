@@ -30,10 +30,12 @@ import (
 const usage = `Usage: transcribe <gcs uri>
 `
 
+const defaultlang = "en-US"
+
 var speakercount = flag.Int("sp", 1, "Set the number of speakers in this audio file")
 var transcribe = flag.String("t", "", "transcribe the argument")
 var uribase = flag.String("ub", "gs://audioscratch", "find the audio files in this bucket path")
-var language = flag.String("lang", "en-US", "language code for transcription, defaults to en-US")
+var language = flag.String("lang", defaultlang, "language code for transcription, defaults to en-US")
 
 var testlog = flag.Bool("testlog", false,
 	"Log in the conventional way for running in a terminal.")
@@ -57,7 +59,16 @@ func dotranscribe(shorturi string) {
 	// Prep names.
 	uri := *uribase + "/" + shorturi
 	basename := strings.TrimSuffix(shorturi, filepath.Ext(shorturi))
-	outputfile := basename + ".json"
+
+	// TODO(rjk): This special case is tedious but saves re-running extra
+	// transcription jobs. I should remove this before the next go-round
+	// of the transcription.
+	outputfile := ""
+	if *language == defaultlang {
+		outputfile = basename + ".json"
+	} else {
+		outputfile = basename + "-" +  *language + ".json"
+	}
 
 	// Skip files already done.
 	if _, err := os.Stat(outputfile); !os.IsNotExist(err) {
@@ -139,7 +150,7 @@ func sendGCS(client *speech.Client, gcsURI string) (*speechpb.LongRunningRecogni
 				EnableAutomaticPunctuation: true,
 				EnableSpeakerDiarization:   true,
 				DiarizationSpeakerCount:    int32(*speakercount),
-				Model:                      "video",
+//				Model:                      "video",
 				UseEnhanced:                true,
 			},
 			Audio: &speechpb.RecognitionAudio{
