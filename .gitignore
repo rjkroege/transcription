@@ -1,2 +1,6 @@
 prepaudio/prepaudio
 transcribe/transcribe
+prettyprint/prettyprint
+.DS_Store
+statustool/output.csv
+statustool/statustool
