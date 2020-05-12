@@ -106,10 +106,19 @@ func main() {
 	textmap := mapmaker("texts", ".txt", ".json", jsonmap, func(v *Row, p, d string) *Row {
 		newv := *v
 		newv.Text = p
+		newv.TextTime = d	
+		return &newv
+	})
+	newtextmap := mapmaker("newtexts", ".txt", ".json", jsonmap, func(v *Row, p, d string) *Row {
+		newv := *v
+		newv.Text = p
 		newv.TextTime = d
 		return &newv
 	})
 
+	// There is considerable opportunity to improve this. See note at Github.
+
+	// Handle original texts
 	outputtable := make([][]string, 0)
 	for _, f := range textmap {
 		outputtable = append(outputtable, converter(f))
@@ -117,6 +126,15 @@ func main() {
 		delete(audiomap, f.Audio)
 		delete(statusmap, f.Original)
 	}
+
+	// Handle newtexts
+	for _, f := range newtextmap {
+		outputtable = append(outputtable, converter(f))
+		delete(jsonmap, f.Json)
+		delete(audiomap, f.Audio)
+		delete(statusmap, f.Original)
+	}
+
 	for _, f := range jsonmap {
 		outputtable = append(outputtable, converter(f))
 		delete(audiomap, f.Audio)
