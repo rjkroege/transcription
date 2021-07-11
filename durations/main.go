@@ -1,20 +1,19 @@
 package main
 
 import (
-	"log"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
 type Duration struct {
-	SourceFile string
+	SourceFile    string
 	TrackDuration string
 }
-
 
 func main() {
 	flag.Parse()
@@ -25,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("can't open %q: %v", fname, err)
 	}
-	
+
 	// 2. parse
 	decoder := json.NewDecoder(fd)
 	clips := make([]Duration, 0)
@@ -39,10 +38,9 @@ func main() {
 		fmt.Printf("%s	%s\n", p.SourceFile, p.TrackDuration)
 	}
 
-	fmt.Printf("totaltime: %.2f minutes\n", sum / 60.)
+	fmt.Printf("totaltime: %.2f minutes\n", sum/60.)
 
 }
-
 
 func timeinminutes(timevalue string) float64 {
 	if strings.HasSuffix(timevalue, " s") {
@@ -52,8 +50,7 @@ func timeinminutes(timevalue string) float64 {
 			log.Fatalf("can't parse %s: %v", timevalue, err)
 		}
 		return f
-	} 
-
+	}
 
 	times := strings.Split(timevalue, ":")
 	seconds := 0.
@@ -61,11 +58,11 @@ func timeinminutes(timevalue string) float64 {
 	for _, tvs := range times {
 		f, err := strconv.ParseFloat(tvs, 64)
 		if err != nil {
-			log.Fatalf("can't parse %s in %s: %v", tvs,timevalue, err)
+			log.Fatalf("can't parse %s in %s: %v", tvs, timevalue, err)
 		}
 		seconds += m * f
 		m = m / 60.
 	}
-	
+
 	return seconds
 }
